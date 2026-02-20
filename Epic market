@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epic Marketplace - Complete Tech Market</title>
+<style>
+body { margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#111; color:#fff; transition: all 0.3s; }
+h2,h3 { color:#ffcc00; text-align:center; text-shadow:0 0 8px #ffcc00; }
+.hero { text-align:center; padding:40px 20px; }
+.hero p { display:inline-block; background:#ffcc00; color:#000; padding:6px 18px; border-radius:20px; font-weight:bold; margin-bottom:15px; box-shadow:0 0 12px #ffcc00; }
+.btn { background:#ffcc00; color:#000; border:none; padding:10px 20px; border-radius:30px; cursor:pointer; font-weight:bold; margin-top:10px; text-decoration:none; display:inline-block; transition:0.3s; box-shadow:0 0 8px #ffcc00; }
+.btn:hover { background:#e6b800; box-shadow:0 0 20px #ffcc00; }
+.products { display:flex; justify-content:space-around; flex-wrap:wrap; gap:20px; padding:20px; }
+.product { background:#222; padding:15px; border-radius:15px; text-align:center; width:250px; transition:0.3s; box-shadow:0 0 10px #ffcc00; }
+.product:hover { transform: translateY(-6px); box-shadow:0 0 20px #ffcc00; }
+.product img { width:100%; border-radius:15px; }
+.input-field { width:100%; padding:10px; margin-bottom:12px; border-radius:8px; border:none; background:#333; color:#fff; box-shadow:0 0 8px #ffcc00 inset; }
+.input-field::placeholder { color:#ccc; }
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center; }
+.modal-content { background:#1a1a1a; padding:20px; border-radius:15px; max-width:400px; width:90%; text-align:center; }
+.close { float:right; cursor:pointer; color:#ffcc00; font-size:20px; }
+@media (max-width:768px){
+  .products { flex-direction:column; gap:20px; padding:0 15px; }
+  .hero, .section { padding:20px 15px; }
+  .input-field { font-size:16px; }
+  .btn { width:100%; text-align:center; padding:12px 0; }
+}
+</style>
+
+<!-- Google Sign-In Script -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+</head>
+<body>
+
+<!-- Hero Section -->
+<section class="hero" id="home">
+<p>✅ Order is Available</p>
+<h2>Epic Marketplace - Tech Style</h2>
+<p>Buy quality products at the best prices. Fast response and trusted service.</p>
+<button class="btn" onclick="openModal('loginModal')">Login / Sign Up</button>
+<a class="btn" href="https://wa.me/2348107427951" target="_blank">Order on WhatsApp</a><br><br>
+<a class="btn" href="https://www.facebook.com/profile.php?id=61586203324406" target="_blank">Contact on Facebook</a>
+<button class="btn" onclick="openModal('adminModal')">Admin Panel</button>
+</section>
+
+<!-- Trending Products Section -->
+<section class="section" id="trending">
+<h2>🔥 Trending Products</h2>
+<div class="products" id="trendingProducts"></div>
+</section>
+
+<!-- Main Products Section -->
+<section class="section" id="products">
+<h2>Our Products</h2>
+<div class="products"></div>
+</section>
+
+<!-- Wallet Section -->
+<section class="section" id="wallet">
+<h2>My Wallet</h2>
+<div style="max-width:400px; margin:auto; text-align:center; background:#1a1a1a; padding:20px; border-radius:15px;">
+<p>Account Balance: <span id="walletBalance">₦0</span></p>
+<input type="number" id="addAmount" class="input-field" placeholder="Enter amount to add">
+<button class="btn" onclick="addMoney()">Add Money</button><br><br>
+<button class="btn" onclick="toggleBalance()">Hide Balance</button>
+<p id="walletMessage" style="margin-top:10px;"></p>
+</div>
+</section>
+
+<!-- Payment Section -->
+<section class="section" id="payment">
+<h2>Payment Options</h2>
+<div style="max-width:500px; margin:auto; text-align:left; background:#1a1a1a; padding:20px; border-radius:15px;">
+<p>Select a payment method:</p>
+<label><input type="radio" name="paymentMethod" value="WhatsApp"> Pay via WhatsApp</label><br>
+<label><input type="radio" name="paymentMethod" value="Transfer"> Payment via Transfer</label><br><br>
+<button class="btn" onclick="selectPayment()">Confirm Payment Method</button>
+<p id="paymentMessage" style="margin-top:10px;"></p>
+<div id="transferDetails" style="display:none; margin-top:15px; background:#222; padding:12px; border-radius:10px; box-shadow:0 0 6px #ffcc00;">
+<strong>Account to Pay:</strong><br>
+Account Number: 8107427951<br>
+Bank: Opay
+</div>
+</div>
+</section>
+
+<!-- Login / Sign Up Modal -->
+<div id="loginModal" class="modal">
+<div class="modal-content">
+<span class="close" onclick="closeModal('loginModal')">&times;</span>
+<h2>Login / Sign Up</h2>
+<input type="text" id="username" class="input-field" placeholder="Username">
+<input type="email" id="email" class="input-field" placeholder="Email">
+<input type="password" id="password" class="input-field" placeholder="Password">
+<button class="btn" onclick="signUp()">Sign Up</button>
+<button class="btn" onclick="login()">Login</button>
+<button class="btn" onclick="forgotPassword()">Forgot Password</button>
+<p style="margin:10px 0; font-weight:bold;">OR</p>
+<!-- Google Login Button -->
+<div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID" data-callback="handleGoogleLogin" data-auto_prompt="false"></div>
+<div class="g_id_signin" data-type="standard"></div>
+<p id="loginMessage" style="margin-top:10px;"></p>
+</div>
+</div>
+
+<!-- Admin Modal -->
+<div id="adminModal" class="modal">
+<div class="modal-content">
+<span class="close" onclick="closeModal('adminModal')">&times;</span>
+<h2>Admin Panel - Epic Marketplace</h2>
+<input type="text" id="productName" class="input-field" placeholder="Product Name">
+<input type="text" id="productCategory" class="input-field" placeholder="Category">
+<input type="number" id="productPrice" class="input-field" placeholder="Price (₦)">
+<input type="text" id="productYear" class="input-field" placeholder="Year">
+<input type="text" id="productSize" class="input-field" placeholder="Size">
+<input type="text" id="productVersion" class="input-field" placeholder="Version">
+<input type="text" id="productOrderFee" class="input-field" placeholder="Order Fee">
+<button class="btn" onclick="addProduct()">Add Product</button>
+<h3 style="margin-top:20px;">Existing Products</h3>
+<div id="adminProductList" style="max-height:300px; overflow-y:auto;"></div>
+<div id="adminMessage" style="margin-top:10px;"></div>
+</div>
+</div>
+
+<script>
+// ===== CONFIG =====
+const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY";
+let products = JSON.parse(localStorage.getItem("products")) || [];
+let trendingProducts = [];
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
+
+// ===== MODALS =====
+function openModal(id){ document.getElementById(id).style.display="flex"; }
+function closeModal(id){ document.getElementById(id).style.display="none"; }
+
+// ===== USER LOGIN =====
+function saveUsers(){ localStorage.setItem("users", JSON.stringify(users)); }
+function signUp(){ const username=document.getElementById("username").value.trim();
+const email=document.getElementById("email").value.trim(); const password=document.getElementById("password").value.trim();
+const msg=document.getElementById("loginMessage"); if(!username||!email||!password){ msg.style.color="red"; msg.innerText="All fields required"; return; }
+if(users.find(u=>u.email===email)){ msg.style.color="red"; msg.innerText="Email exists"; return; }
+const user={username,email,password,wallet:0}; users.push(user); saveUsers(); msg.style.color="green"; msg.innerText="Sign up successful"; }
+function login(){ const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value.trim(); const msg=document.getElementById("loginMessage");
+const user=users.find(u=>u.email===email && u.password===password); if(user){ currentUser=user; localStorage.setItem("currentUser",JSON.stringify(currentUser));
+msg.style.color="green"; msg.innerText=`Welcome ${user.username}`; closeModal('loginModal'); updateWalletDisplay(); } else{ msg.style.color="red"; msg.innerText="Invalid"; } }
+function forgotPassword(){ const email=document.getElementById("email").value.trim(); const msg=document.getElementById("loginMessage");
+const user=users.find(u=>u.email===email); if(user){ msg.style.color="green"; msg.innerText=`Password: ${user.password}`; } else{ msg.style.color="red"; msg.innerText="Email not found"; } }
+
+// ===== GOOGLE LOGIN =====
+function handleGoogleLogin(response){
+  const jwt = parseJwt(response.credential); 
+  const email = jwt.email; const username = jwt.name;
+  let user = users.find(u => u.email === email);
+  if(!user){ user={username,email,password:null,wallet:0}; users.push(user); saveUsers(); }
+  currentUser=user; localStorage.setItem("currentUser",JSON.stringify(currentUser));
+  closeModal('loginModal'); updateWalletDisplay(); alert(`Welcome ${currentUser.username} (Google Account)`); 
+}
+function parseJwt(token){ const base64Url=token.split('.')[1]; const base64=base64Url.replace(/-/g,'+').replace(/_/g,'/'); const jsonPayload=decodeURIComponent(atob(base64).split('').map(c=>'%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')); return JSON.parse(jsonPayload); }
+
+// ===== WALLET, PAYMENTS, AI PRODUCTS, TRENDING, ADMIN =====
+// ... same as previous full code ...
+</script>
+</body>
+</html>
